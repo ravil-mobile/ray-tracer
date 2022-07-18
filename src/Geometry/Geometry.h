@@ -56,8 +56,8 @@ struct Camera : public Object {
       upDirection(std::move(upDirection)),
       screen(screen) {}
   Camera(const Camera& other) = default;
-  VectorT screenNormal{0.0, 0.0, 0.0};
-  VectorT upDirection{0.0, 0.0, 1.0};
+  VectorT screenNormal{0.0, 0.0, -1.0};
+  VectorT upDirection{0.0, 1.0, 0.0};
   ScreenT screen{};
 };
 
@@ -73,6 +73,7 @@ public:
   void addSphere(const Sphere& sphere) { spheres.push_back(sphere); }
 
   auto getImageView() const { return imageView; }
+  const auto& getCamera() const { return camera; }
   const auto& getLights() const { return lights; }
   const auto& getSpheres() const { return spheres; }
   auto getBackgroundColor() const { return backgroundColor; }

@@ -36,13 +36,14 @@ public:
   void run();
   const Canvas& getCanvas() { return canvas; }
 
+  using AffineMatrixT = Eigen::Matrix<float, 3, 4>;
 private:
   void findLinearMap();
   void castRay();
 
   const Scenario& scenario;
   Canvas canvas;
-  Eigen::Matrix3f cameraProjection{};
+  AffineMatrixT cameraProjection{};
 };
 
 #endif // ENGINE_H_
