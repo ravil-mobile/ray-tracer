@@ -29,7 +29,7 @@ void Engine::computeLinearMap() {
 
 VectorT Engine::castRay(float x, float y) {
   Eigen::Vector4f vector{x, y, 0.0, 1.0};
-  return cameraProjection * vector;
+  return (cameraProjection * vector).normalized();
 }
 
 void Engine::run() {
@@ -37,7 +37,7 @@ void Engine::run() {
 
   const auto& view = canvas.getImageView();
   const auto& camera = scenario.getCamera();
-  const auto& light = scenario.getLights()[0];
+  const auto& lights = scenario.getLights();
 
   float xBegin = -0.5 * camera.screen.width;
   float yBegin = 0.5 * camera.screen.height;
@@ -49,9 +49,6 @@ void Engine::run() {
     for (size_t i = 0; i < view.width; ++i) {
       auto ray = castRay(xBegin + static_cast<float>(i) * dx,
                          yBegin - static_cast<float>(j) * dy);
-
-      ray.normalize();
-
 
       const auto& spheres = scenario.getSpheres();
       auto closestHitDistance = std::numeric_limits<float>::max();
@@ -75,10 +72,20 @@ void Engine::run() {
       }
 
       if (closestSphere != spheres.end()) {
+        float shininess = 20;
+        float lambertIntensity{0.0};
+        float specularIntensity{0.0};
         VectorT surfaceNormal = (hitVector - closestSphere->center).normalized();
-        VectorT lightVector = (light.center - hitVector).normalized();
-        float intensity = lightVector.dot(surfaceNormal);
-        canvas.at(i, j) = Colorable::scale(closestSphere->color, intensity);
+        for (const auto& light: lights) {
+          VectorT lightVector = (light.center - hitVector).normalized();
+          lambertIntensity += lightVector.dot(surfaceNormal);
+
+          VectorT reflectionVector = 2 * lightVector.dot(surfaceNormal) * surfaceNormal - lightVector;
+          VectorT viewerVector = -1.0 * ray.normalized();
+
+          specularIntensity += std::pow(reflectionVector.dot(viewerVector), shininess);
+        }
+        canvas.at(i, j) = Colorable::scale(closestSphere->color, lambertIntensity + specularIntensity);
       }
       else {
         canvas.at(i, j) = backgroundColor;
