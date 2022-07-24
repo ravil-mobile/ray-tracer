@@ -9,6 +9,20 @@
 
 struct Colorable {
   explicit Colorable(const ColorT& color) : color(color) {}
+  static ColorT scale(ColorT baseColor, float factor) {
+    ColorT updatedColor{};
+
+    #pragma unroll
+    for (int i = 0; i < 3; ++i) {
+      float channel = (factor * static_cast<float>(baseColor[i]));
+      channel = (channel > 255) ? 255 : channel;
+      channel = (channel < 0) ? 0 : channel;
+
+      updatedColor[i] = static_cast<uint8_t>(channel);
+    }
+
+    return updatedColor;
+  }
   ColorT color{};
 };
 

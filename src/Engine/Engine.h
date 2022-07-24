@@ -38,8 +38,8 @@ public:
 
   using AffineMatrixT = Eigen::Matrix<float, 3, 4>;
 private:
-  void findLinearMap();
-  void castRay();
+  void computeLinearMap();
+  VectorT castRay(float x, float y);
 
   const Scenario& scenario;
   Canvas canvas;
