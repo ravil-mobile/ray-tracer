@@ -1,7 +1,7 @@
 #ifndef ENGINE_H_
 #define ENGINE_H_
 
-#include "Geometry/Geometry.h"
+#include "Engine/Scenario.h"
 #include <vector>
 
 class Canvas {
